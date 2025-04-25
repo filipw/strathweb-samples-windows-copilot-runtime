@@ -17,6 +17,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Microsoft.Windows.AI.Generative;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -53,7 +54,7 @@ namespace App2
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error initializing AI model: {ex.Message}");
+                Debug.WriteLine($"Error initializing AI model: {ex}");
             }
         }
 

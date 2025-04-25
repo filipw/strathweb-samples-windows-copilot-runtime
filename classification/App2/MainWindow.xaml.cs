@@ -70,14 +70,14 @@ namespace App2
                         ResultTextBlock.Foreground = new SolidColorBrush(Colors.Gray);
                         break;
                     default:
-                        ResultTextBlock.Text = $"Unexpected response from the model: {ResultTextBlock.Text}";
+                        ResultTextBlock.Text = $"{ResultTextBlock.Text}";
                         ResultTextBlock.Foreground = new SolidColorBrush(Colors.White);
                         break;
                 }
             }
             catch (Exception ex)
             {
-                ResultTextBlock.Text = $"Error: {ex.Message}";
+                ResultTextBlock.Text = $"Error: {ex}";
             }
             finally
             {

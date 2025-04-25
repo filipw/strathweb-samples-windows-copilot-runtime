@@ -28,12 +28,37 @@ User: ";
 
                 var prompt = $"{_classificationPrompt}{condition} Assistant: ";
 
-                var result = await App.LanguageModel.GenerateResponseAsync(prompt);
-                return result.Response.Trim();
+                // variant 1: defaults
+                //var result = await App.LanguageModel.GenerateResponseAsync(prompt);
+
+                // variant 2: more control
+                var contentFilterOptions = new ContentFilterOptions();
+                contentFilterOptions.PromptMinSeverityLevelToBlock.SelfHarmContentSeverity = SeverityLevel.Low;
+                contentFilterOptions.PromptMinSeverityLevelToBlock.ViolentContentSeverity = SeverityLevel.Low;
+
+                var languageModelOptions = new LanguageModelOptions(skill: LanguageModelSkill.General, temp: 0.0f, top_p: 0.1f, top_k: 1);
+
+                var result = await App.LanguageModel.GenerateResponseAsync(languageModelOptions, prompt, contentFilterOptions);
+
+                switch (result.Status)
+                {
+                    case LanguageModelResponseStatus.Complete:
+                        return result.Response.Trim();
+                    case LanguageModelResponseStatus.ResponseBlockedByPolicy:
+                        return "Error: Response blocked by policy";
+                    case LanguageModelResponseStatus.PromptBlockedByPolicy:
+                        return "Error: Prompt Blocked by policy";
+                    case LanguageModelResponseStatus.BlockedByPolicy:
+                        return "Error: Blocked by runtime";
+                    case LanguageModelResponseStatus.PromptLargerThanContext:
+                        return "Error: Prompt larger than context";
+                    default:
+                        return "Error: Unknown status";
+                }
             }
             catch (Exception ex)
             {
-                return $"Error: {ex.Message}";
+                return $"Unknown Error: {ex}";
             }
         }
     }
