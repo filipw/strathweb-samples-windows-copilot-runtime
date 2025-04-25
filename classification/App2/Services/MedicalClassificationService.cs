@@ -33,21 +33,25 @@ User: ";
 
                 // variant 2: more control
                 var contentFilterOptions = new ContentFilterOptions();
-                contentFilterOptions.PromptMinSeverityLevelToBlock.SelfHarmContentSeverity = SeverityLevel.Low;
-                contentFilterOptions.PromptMinSeverityLevelToBlock.ViolentContentSeverity = SeverityLevel.Low;
+                contentFilterOptions.PromptMaxAllowedSeverityLevel.SelfHarm = SeverityLevel.Low;
+                contentFilterOptions.PromptMaxAllowedSeverityLevel.Violent = SeverityLevel.Low;
 
-                var languageModelOptions = new LanguageModelOptions(skill: LanguageModelSkill.General, temp: 0.0f, top_p: 0.1f, top_k: 1);
+                var languageModelOptions = new LanguageModelOptions();
+                languageModelOptions.Temperature = 0.0f;
+                languageModelOptions.TopP = 0.1f;
+                languageModelOptions.TopK = 1;
+                languageModelOptions.ContentFilterOptions = contentFilterOptions;
 
-                var result = await App.LanguageModel.GenerateResponseAsync(languageModelOptions, prompt, contentFilterOptions);
-
+                var result = await App.LanguageModel.GenerateResponseAsync(prompt, languageModelOptions);
+                
                 switch (result.Status)
                 {
                     case LanguageModelResponseStatus.Complete:
-                        return result.Response.Trim();
-                    case LanguageModelResponseStatus.ResponseBlockedByPolicy:
-                        return "Error: Response blocked by policy";
-                    case LanguageModelResponseStatus.PromptBlockedByPolicy:
-                        return "Error: Prompt Blocked by policy";
+                        return result.Text.Trim();
+                    case LanguageModelResponseStatus.ResponseBlockedByContentModeration:
+                        return "Error: Response blocked by content moderation";
+                    case LanguageModelResponseStatus.PromptBlockedByContentModeration:
+                        return "Error: Prompt Blocked by content moderation";
                     case LanguageModelResponseStatus.BlockedByPolicy:
                         return "Error: Blocked by runtime";
                     case LanguageModelResponseStatus.PromptLargerThanContext:
