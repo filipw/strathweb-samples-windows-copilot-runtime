@@ -46,7 +46,7 @@ namespace App2
         {
             try
             {
-                if (LanguageModel.GetReadyState() != AIFeatureReadyState.Ready)
+                if (LanguageModel.GetReadyState() == AIFeatureReadyState.EnsureNeeded)
                 {
                     var op = await LanguageModel.EnsureReadyAsync();
                 }
